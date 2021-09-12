@@ -1,0 +1,26 @@
+// declarando funciones
+@function double($number) {
+    @if type-of($number) == number {
+        @return $number * 2;
+    }
+    @return null;
+}
+
+@function em($px, $base: 16px) {
+    @if type-of($px) == number and unit($px) == 'px' {
+        @return ($px / $base) * 1em;
+    }
+    @return null;
+}
+
+@function img($image) {
+    @return url($path + $image);
+}
+
+@function long-shadow($n, $color) {
+    $shadow: #{1px 1px $color};
+    @for $i from 2 through $n {
+        $shadow: append($shadow, #{$i*1px $i*1px $color}, comma);
+    }
+    @return $shadow;
+}

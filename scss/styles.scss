@@ -1,0 +1,275 @@
+@import 'config/variables';
+@import 'config/functions';
+
+
+body {
+    // font-size: double(1em);
+    font-size: em(20px);
+    background: img('imagen,jpg');
+}
+
+
+/*
+    Funciones de String
+    quote($string) // agrega comillas
+    unquote($string) // quita comillas
+
+    str-length($tring) // cantidad de caracteres del string
+    str-index($string,$value) // posicion del valor dentro del string
+
+    to-upper-case($string) // convierte a mayusculas
+    to-lower-case($string) // convierte a minusculas
+*/
+$width: 1px;
+$style: solid;
+$color: red;
+
+$colors: (
+    primary: green,
+    secondary: red,
+    tertiary: blue
+);
+
+body {
+    border: unquote($width + ' ' + $style + ' ' + $color);
+    &::before {
+        content: quote($style);
+    }
+    index: str-index($style, "i");
+    color: map-get($colors, primary)
+}
+
+
+/*
+    Funciones de Numeros
+
+    percentage($number) // devuelve el porcentaje siendo 1 = 100%
+
+    max($nro1, $nro2, $nro3) // elige al mayor de todos los numeros
+    min($nro1, $nro2, $nro3) // elige al menor de todos los numeros
+
+    floor($nro) // redondea hacia abajo
+    ceil($nro) // redondea hacia arriba
+    round($nro) // redondea al que se aproxime
+
+    random()  // devuelve un numero aleatorio entre 0 y 1 
+    random($nro)  // devuelve un numero aleatorio entre 0 y el parametro 
+
+*/
+
+@function columns($columns,$total-columns) {
+    @return percentage($columns / $total-columns);
+}
+
+@for $i from 1 through 12 {
+    .cols-#{$i} {        
+        width: columns($i, 12);
+    }
+}
+
+body {
+    width: percentage(1);
+}
+
+.cols-4 {
+    width: columns(4, 12);
+}
+
+
+/*
+    Funciones de mapas y listas
+    -listas
+    nth($list, n) //devuelvel el elemento con la pocision n
+    index($list, $valor) //devuelvel la posicion del valor
+
+    join($list1, $list2, $list3, separador: space | comma) //concatena los valores 
+    append($list, $value, separador: space|comma)
+
+    -maps
+    map-get($map, $key) // obtiene un valor del mapa
+    map-keys($map) // lista con todas las keys
+    map-values($map) // lista con todos los valores
+    map-has-key($map) // devuelve true o false si existe o no la key 
+*/
+
+$border: 1px solid red;
+$border2: 1px dotted green;
+
+body {
+    border-color: index($border, red );
+    border-color: join($border, $border2, comma);
+    border: append(1px solid, $color, space)
+}
+
+@function color($color-key) {
+    @if map-has-key($colors, $color-key ) {
+        @return map-get($colors, $color-key );
+    }
+    @return null;
+}
+
+body {
+    border-color: color(primary);
+}
+
+
+/*
+    Funciones de instrospeccion
+    inspect($colors) // impresion similar al consolo.log
+    type-of($variable) //devuelve el tipo de dato
+    unit($variable) // devuelve la unidad del valor numerico como string
+    unitless() //devuelve true si el numero no tiene unidad caso contrario false
+
+    mixin-exists($mixin) devuelve true si existe el mixin
+    function-exists(function) devuelve true si existe el function
+    variable-exists($varaible) devuelve true si existe el variable
+    global-variable-exists($variable) devuelve true si existe la variable global
+*/
+
+body {
+    color: type-of($colors);
+}
+
+@mixin button {
+    color: red;
+}
+
+@if mixin-exists(button) {
+    body {
+        @include button;
+        background: red;
+    }
+}
+
+.text {
+    color: black;
+    text-shadow: long-shadow(500, darken(red, 10));
+    font-size: 6em;
+}
+
+
+/*
+    Colores
+    - sustrativo (pintura, imprenta) a mas colores mas oscuro
+        cyan magenta amarillo black(CMYK)
+    - aditivo (luz, pantalla) a mas colores mas luz
+        
+        red, green, blue (RGB)
+        cantidad de variaciones 256, 256, 256 == 2^8 2^8 2^8 = 16M colores = profundidas 24bits
+        23, 200, 146 (RGB)
+        
+        hue, saturation, lighten (HSL)
+            hue -> tono de color (0 a 360 grados)
+            saturation -> intencidad de color, de gris a color puro
+            lighten -> cantidad de luz (0% negro, 100% blanco, color puro 50%)
+        color wheel
+            hue
+            0/360   -> red
+            60      -> yellow
+            120     -> green
+            180     -> cyan
+            240     -> blue
+            300     -> magenta
+
+        hexadecimal  -> #RRGGBB
+            0123456789ABCDEF
+*/
+
+/*
+    Funciones RGB
+        red(($color) // obtiene la cantidad de rojo del color
+        green(($color) // obtiene la cantidad de verde del color
+        blue(($color) // obtiene la cantidad de azul del color
+        
+    Funciones HSL
+        hue($color) // obtiene la cantidad de hue del color
+        saturation($color) // obtiene la cantidad de saturation del color
+        lightness($color) // obtiene la cantidad de lightness del color
+
+        darken($color, cantidad) // afectan al canal de lightness
+        lighten($color, cantidad) // afectan al canal de lightness
+        saturate($color, cantidad) // afectan al canal de saturation
+        desaturate($color, cantidad) // afectan al canal de saturation
+        adjust-hue($color, cantidad) // el tono de color    
+*/
+
+$base-color: red;
+$text-color-light: #fff;
+$text-color-dark: #222;
+
+@function color-text() {
+    @if lightness($base-color) > 50 {
+        @return $text-color-dark;
+    } @else {
+        @return $text-color-light;
+    }
+}
+
+body {
+    // background: rgb(23, 200, 146);
+    // background: hsl(162, 79, 44);
+    // $color: rgb(50, 80, 230);
+    // h: hue($color);
+    // s: saturation($color);
+    // l: lightness($color);
+    background: $base-color;
+    color: color-text();
+}
+
+body {
+    $color: red;
+    // background: darken($color,10);
+    background: adjust-hue($color,10); // rota los grados del color 
+}
+
+
+
+/*
+    Debugging con
+    @debug // imprime en consola al compilar
+    @warn // imprime una alerta en consola al compilar
+    @error // imprime el error en consola al compilar e interrumpe la misma
+    
+*/
+$size: 1em;
+
+@mixin button-new($color) {
+    @if type-of($color) == color {
+        color: $color;
+    } @else {
+        @error 'el parametro #{$color} no es valido. use un tipo de dato color';
+    }
+}
+
+
+body {
+    // data-type: type-of($size);
+    @debug type-of($size);
+    @warn 'Hola mundo';
+}
+
+.button {
+    // @include button-new(hola); // imprime el error
+    @include button-new(peru);
+}
+
+
+/*
+    estructura de proyectos
+    Metodologias
+    SMACSS
+        base // estilos a etiquetas html (normalize, etc)
+        modulos // componentes reutilizable (cards, botones, etc)
+        layout // geometria y posicion
+        theme // tipografia y color, identidad visual de la marca
+        estado // elementos que cambian (animaciones, hover, active, )
+    ITCSS
+    7in1
+        base
+        components
+        layout
+        pages
+        themes
+        utils
+        vendors
+*/
